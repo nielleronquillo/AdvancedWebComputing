@@ -1,0 +1,112 @@
+<!DOCTYPE html>
+<html><head><meta http-equiv="Content-Type" content="text/html; charset=ISO-8859-1">
+		<title>DanZel</title>
+		<link rel="stylesheet" type="text/css" href="style.css">
+	</head>
+	
+	<body onload="load()">
+	  <div class = 'main'>
+		<h1>My Tasks To Do</h1>
+		<h3 id="selected_task">My Task To Do: </h3>
+		<input id="select_all_button" type="button" value="Toggle All" onclick="toggle()">
+		<input id="uselect_all_button" type="button" value="UnToggle All" onclick="untoggle()">
+		<input id="delete_all_button" type="button" value="Remove Toggle" onclick="remover()">
+		<br>
+		<input id="task_input" type="text">
+		<ul id="task_list">
+			
+		</ul>
+	   </div>
+		
+		<script type="text/javascript">
+			var task_input_element = document.getElementById('task_input');
+			var tasks_element = document.getElementById('task_list');
+			
+			task_input_element.onkeydown = function(ev){
+			if(ev.keyCode === 13){
+			if (task_input_element.value.length === 0)
+				alert("Please fill up clear field!");
+			 else{
+				if(document.getElementById("task_list").childNodes.length === 1)
+				add_element();
+			 else{
+				for(var x = 0 ; x < (document.getElementById("task_list").childNodes.length - 1) ; x++){
+				if(task_input_element.value === document.getElementById("task_list").childNodes[x].textContent){
+				    alert("Task already exist!");
+					break;
+					}
+					else if(x === document.getElementById("task_list").childNodes.length - 2){
+					add_element();
+					break;
+					}
+				}
+			}
+		}
+	}
+}
+			function load(){
+                for(var x = localStorage.length - 1 ; x > 0 ; x--){
+                    if(x === 0)
+                        break
+                    else{
+                        var new_task = document.createElement('li');
+                        new_task.innerHTML =
+                        "<div class = 'task'>" +
+                            "<input type = 'checkbox' name = 'task_checkbox' onClick = 'counter()'>" +
+                            localStorage.getItem("task_" + x) +
+                        "</div>";
+                        tasks_element.appendChild(new_task);
+                        counter();
+                    }
+                }
+            }
+			function add_element(){
+                localStorage.setItem("task_" + document.getElementById("task_list").childNodes.length, task_input_element.value);
+				var new_task = document.createElement('li');
+				new_task.innerHTML =
+				"<div class = 'task'>" +
+					"<input type = 'checkbox' name = 'task_checkbox' value = task_"+ document.getElementById("task_list").childNodes.length + " onClick = 'counter()'>" +
+					task_input_element.value +
+				"</div>";
+				tasks_element.insertBefore(new_task, tasks_element.firstChild);
+				task_input_element.value = "";
+				counter();
+			}
+			function toggle(){
+				for(var x = 0 ; x < document.getElementsByName("task_checkbox").length ; x++){
+						document.getElementsByName("task_checkbox")[x].checked = true;
+				}
+				counter();
+			}
+			function untoggle(){
+				for(var x = 0 ; x < document.getElementsByName("task_checkbox").length ; x++){
+					document.getElementsByName("task_checkbox")[x].checked = false;
+				}
+				counter();
+			}
+			function counter(){
+				var selected_task = 0;
+				for(var x = 0 ; x < document.getElementsByName("task_checkbox").length ; x++){
+					if(document.getElementsByName("task_checkbox")[x].checked === true){
+						selected_task++;
+					}
+				}
+				document.getElementById("selected_task").innerHTML = "My Tasks To Do : "  + selected_task + "/" + (document.getElementById("task_list").childNodes.length - 1 );
+			}
+			function remover(){
+                for(var x = localStorage.length - 1 ; x > 0 ; x--){
+                    if(document.getElementsByName("task_checkbox")[x - 1].checked === true){
+                        localStorage.removeItem("task_" + x);
+                    }
+                }
+				for(var x = 0 ; x < document.getElementsByName("task_checkbox").length ; x++){
+					if(document.getElementsByName("task_checkbox")[x].checked === true){
+						document.getElementsByName("task_checkbox")[x].parentNode.parentNode.parentNode.removeChild(document.getElementsByName("task_checkbox")[x].parentNode.parentNode);
+						x--;
+					}
+				}
+				counter();
+			}
+		</script>
+	
+</body></html>
